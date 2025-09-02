@@ -1,4 +1,4 @@
-import type { Executor, Definition, Run, TestSuite, KubernetesHealth, JobLogs, JobStatus, JobDeleteResponse } from "../types"
+import type { Executor, Definition, Run, Suite, KubernetesHealth, JobLogs, JobStatus, JobDeleteResponse } from "../types"
 import { StorageService } from "./storage"
 
 const API_BASE = "http://localhost:3001/api"
@@ -165,7 +165,7 @@ export class ApiStorageService implements StorageService {
   }
 
   // Test Suites
-  async getTestSuites(): Promise<TestSuite[]> {
+  async getSuites(): Promise<Suite[]> {
     const res = await fetch(`${API_BASE}/test-suites`)
     if (!res.ok) throw new Error("Failed to fetch test suites")
     
@@ -183,7 +183,7 @@ export class ApiStorageService implements StorageService {
     }));
   }
 
-  async saveTestSuite(suite: TestSuite): Promise<TestSuite> {
+  async saveSuite(suite: Suite): Promise<Suite> {
     const method = suite.id ? "PUT" : "POST"
     const url = suite.id ? `${API_BASE}/test-suites/${suite.id}` : `${API_BASE}/test-suites`
 
@@ -193,7 +193,7 @@ export class ApiStorageService implements StorageService {
       id: suite.id || "00000000-0000-0000-0000-000000000000", // Use nil UUID if no ID
       execution_mode: suite.executionMode,
       // Convert string IDs to UUIDs
-      test_definition_ids: suite.testDefinitionIds.map(id => {
+      test_definition_ids: suite.testDefinitionIds.map((id: string) => {
         // Check if ID is already a UUID
         if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
           return id;
@@ -219,7 +219,7 @@ export class ApiStorageService implements StorageService {
     return await res.json()
   }
 
-  async deleteTestSuite(id: string): Promise<boolean> {
+  async deleteSuite(id: string): Promise<boolean> {
     // Convert to UUID format if needed
     let uuidId = id;
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
@@ -230,7 +230,7 @@ export class ApiStorageService implements StorageService {
     return res.ok
   }
 
-  async getTestSuiteById(id: string): Promise<TestSuite | undefined> {
+  async getSuiteById(id: string): Promise<Suite | undefined> {
     // Convert to UUID format if needed
     let uuidId = id;
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
