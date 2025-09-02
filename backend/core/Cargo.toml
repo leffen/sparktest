@@ -1,6 +1,6 @@
 [package]
 name = "sparktest-core"
-version = "0.2.1"
+version = "1.0.0"
 edition = "2021"
 description = "Core types and database models for SparkTest"
 license = "MIT"

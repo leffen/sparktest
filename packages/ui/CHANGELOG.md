@@ -1,4 +1,4 @@
-# @tatou/storage-service
+# @tatou/ui
 
 ## 1.0.0
 
@@ -29,11 +29,11 @@
 
 ### Minor Changes
 
-- Add comprehensive type system and storage abstraction layer
-  - Implement core TypeScript types for test definitions, executors, and runs
-  - Add generic storage interface with multiple implementations
-  - Support for API, local, and hybrid storage strategies
-  - Enhanced type safety across the platform
+- Implement comprehensive UI component library
+  - Add reusable form components for test definitions and executors
+  - Create data visualization components (charts, metrics, logs)
+  - Implement responsive sidebar and layout components
+  - Add comprehensive styling with Tailwind CSS integration
 
 ### Patch Changes
 
@@ -42,13 +42,3 @@
   - Add Docker containerization for production deployment
   - Set up CI/CD workflows with proper testing
   - Add comprehensive documentation and examples
-
-- Updated dependencies []:
-  - @tatou/core@1.0.0
-
-## 0.2.1
-
-### Patch Changes
-
-- Updated dependencies []:
-  - @tatou/core@0.2.1
