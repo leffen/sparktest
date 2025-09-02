@@ -236,12 +236,12 @@ export class LocalStorageService implements StorageService {
   }
 
   // Suites
-  async getSuites(): Promise<Suite[]> {
+  async getTestSuites(): Promise<Suite[]> {
     return getFromStorage("sparktest_test_suites", sampleSuites)
   }
 
-  async saveSuite(suite: Suite): Promise<Suite> {
-    const list = await this.getSuites()
+  async saveTestSuite(suite: Suite): Promise<Suite> {
+    const list = await this.getTestSuites()
     const index = list.findIndex((s) => s.id === suite.id)
     if (index >= 0) {
       list[index] = suite
@@ -252,15 +252,15 @@ export class LocalStorageService implements StorageService {
     return suite
   }
 
-  async deleteSuite(id: string): Promise<boolean> {
-    const list = await this.getSuites()
+  async deleteTestSuite(id: string): Promise<boolean> {
+    const list = await this.getTestSuites()
     const updated = list.filter((s) => s.id !== id)
     setToStorage("sparktest_test_suites", updated)
     return true
   }
 
-  async getSuiteById(id: string): Promise<Suite | undefined> {
-    const list = await this.getSuites()
+  async getTestSuiteById(id: string): Promise<Suite | undefined> {
+    const list = await this.getTestSuites()
     return list.find((s) => s.id === id)
   }
 
@@ -285,7 +285,7 @@ export class LocalStorageService implements StorageService {
     throw new Error("Kubernetes integration not available in local storage mode")
   }
 
-  initialize(): void {
+  async initialize(): Promise<void> {
     if (typeof window === "undefined") return
     if (!localStorage.getItem("sparktest_executors")) {
       setToStorage("sparktest_executors", sampleExecutors)

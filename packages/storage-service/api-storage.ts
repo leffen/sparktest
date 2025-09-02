@@ -192,7 +192,7 @@ export class ApiStorageService implements StorageService {
   }
 
   // Suites
-  async getSuites(): Promise<Suite[]> {
+  async getTestSuites(): Promise<Suite[]> {
     const res = await fetch(`${API_BASE}/test-suites`)
     if (!res.ok) throw new Error("Failed to fetch test suites")
 
@@ -210,7 +210,7 @@ export class ApiStorageService implements StorageService {
     }))
   }
 
-  async saveSuite(suite: Suite): Promise<Suite> {
+  async saveTestSuite(suite: Suite): Promise<Suite> {
     const method = suite.id ? "PUT" : "POST"
     const url = suite.id ? `${API_BASE}/test-suites/${suite.id}` : `${API_BASE}/test-suites`
 
@@ -246,7 +246,7 @@ export class ApiStorageService implements StorageService {
     return (await res.json()) as Suite
   }
 
-  async deleteSuite(id: string): Promise<boolean> {
+  async deleteTestSuite(id: string): Promise<boolean> {
     // Convert to UUID format if needed
     let uuidId = id
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
@@ -257,7 +257,7 @@ export class ApiStorageService implements StorageService {
     return res.ok
   }
 
-  async getSuiteById(id: string): Promise<Suite | undefined> {
+  async getTestSuiteById(id: string): Promise<Suite | undefined> {
     // Convert to UUID format if needed
     let uuidId = id
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
@@ -312,7 +312,7 @@ export class ApiStorageService implements StorageService {
     return (await res.json()) as JobDeleteResponse
   }
 
-  initialize(): void {
+  async initialize(): Promise<void> {
     // No-op for API mode
   }
 }

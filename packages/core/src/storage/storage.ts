@@ -40,5 +40,5 @@ export interface StorageService {
   deleteJob(jobName: string): Promise<JobDeleteResponse>
 
   // Optional: setup
-  initialize(): void
+  initialize(): Promise<void>
 }

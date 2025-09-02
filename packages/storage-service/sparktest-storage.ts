@@ -247,19 +247,19 @@ export class SparkTestStorageService implements StorageService {
   }
 
   // Suite methods
-  async getSuites(): Promise<Suite[]> {
+  async getTestSuites(): Promise<Suite[]> {
     return this.suiteStorage.getItems()
   }
 
-  async saveSuite(suite: Suite): Promise<Suite> {
+  async saveTestSuite(suite: Suite): Promise<Suite> {
     return this.suiteStorage.saveItem(suite)
   }
 
-  async deleteSuite(id: string): Promise<boolean> {
+  async deleteTestSuite(id: string): Promise<boolean> {
     return this.suiteStorage.deleteItem(id)
   }
 
-  async getSuiteById(id: string): Promise<Suite | undefined> {
+  async getTestSuiteById(id: string): Promise<Suite | undefined> {
     return this.suiteStorage.getItemById(id)
   }
 

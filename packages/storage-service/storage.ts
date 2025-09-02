@@ -35,11 +35,11 @@ export interface StorageService {
     callback: (payload: { eventType: string; new?: Run; old?: Run }) => void
   ) => () => void
 
-  // Suites
-  getSuites(): Promise<Suite[]>
-  saveSuite(suite: Suite): Promise<Suite>
-  deleteSuite(id: string): Promise<boolean>
-  getSuiteById(id: string): Promise<Suite | undefined>
+  // Test Suites
+  getTestSuites(): Promise<Suite[]>
+  saveTestSuite(suite: Suite): Promise<Suite>
+  deleteTestSuite(id: string): Promise<boolean>
+  getTestSuiteById(id: string): Promise<Suite | undefined>
 
   // Kubernetes Integration
   getKubernetesHealth(): Promise<KubernetesHealth>
@@ -49,5 +49,5 @@ export interface StorageService {
   deleteJob(jobName: string): Promise<JobDeleteResponse>
 
   // Optional: setup
-  initialize(): void
+  initialize(): Promise<void>
 }
