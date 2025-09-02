@@ -86,7 +86,9 @@ export function TestWebhookModal({ isOpen, onClose, webhook }: TestWebhookModalP
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Test Webhook</DialogTitle>
-          <DialogDescription>Send a test payload to verify your webhook configuration</DialogDescription>
+          <DialogDescription>
+            Send a test payload to verify your webhook configuration
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -97,7 +99,9 @@ export function TestWebhookModal({ isOpen, onClose, webhook }: TestWebhookModalP
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">URL:</span>
-              <span className="text-sm text-muted-foreground font-mono break-all">{webhook.url}</span>
+              <span className="text-sm text-muted-foreground font-mono break-all">
+                {webhook.url}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Type:</span>
@@ -126,17 +130,23 @@ export function TestWebhookModal({ isOpen, onClose, webhook }: TestWebhookModalP
                 ) : (
                   <XCircle className="h-5 w-5 text-red-500" />
                 )}
-                <span className={`font-medium ${result.success ? "text-green-700" : "text-red-700"}`}>
+                <span
+                  className={`font-medium ${result.success ? "text-green-700" : "text-red-700"}`}
+                >
                   {result.success ? "Test Successful" : "Test Failed"}
                 </span>
               </div>
 
               <div className="space-y-1 text-sm">
-                <p className={result.success ? "text-green-600" : "text-red-600"}>{result.message}</p>
+                <p className={result.success ? "text-green-600" : "text-red-600"}>
+                  {result.message}
+                </p>
                 {result.statusCode && result.statusCode > 0 && (
                   <p className="text-muted-foreground">Status Code: {result.statusCode}</p>
                 )}
-                {result.responseTime && <p className="text-muted-foreground">Response Time: {result.responseTime}ms</p>}
+                {result.responseTime && (
+                  <p className="text-muted-foreground">Response Time: {result.responseTime}ms</p>
+                )}
                 <p className="text-muted-foreground">{formatDistanceToNow(result.timestamp)}</p>
               </div>
             </div>
@@ -145,7 +155,8 @@ export function TestWebhookModal({ isOpen, onClose, webhook }: TestWebhookModalP
           {!testing && !result && (
             <div className="p-4 bg-muted/30 rounded-lg">
               <p className="text-sm text-muted-foreground">
-                This will send a test payload to your webhook endpoint to verify it&apos;s working correctly.
+                This will send a test payload to your webhook endpoint to verify it&apos;s working
+                correctly.
               </p>
             </div>
           )}

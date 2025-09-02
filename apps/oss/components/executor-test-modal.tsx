@@ -143,7 +143,9 @@ export function ExecutorTestModal({ isOpen, onClose, executor }: ExecutorTestMod
 
           <div>
             <span className="text-sm font-medium">Default Command:</span>
-            <code className="block mt-1 text-sm bg-muted px-3 py-2 rounded">{executor.defaultCommand.join(" ")}</code>
+            <code className="block mt-1 text-sm bg-muted px-3 py-2 rounded">
+              {executor.defaultCommand.join(" ")}
+            </code>
           </div>
 
           {testing && (
@@ -169,14 +171,20 @@ export function ExecutorTestModal({ isOpen, onClose, executor }: ExecutorTestMod
                 ) : (
                   <XCircle className="h-5 w-5 text-red-500" />
                 )}
-                <span className={`font-medium ${result.success ? "text-green-700" : "text-red-700"}`}>
+                <span
+                  className={`font-medium ${result.success ? "text-green-700" : "text-red-700"}`}
+                >
                   {result.message}
                 </span>
               </div>
 
               <div className="space-y-2 text-sm">
-                {result.pullTime && <p className="text-muted-foreground">Image pull time: {result.pullTime}s</p>}
-                {result.startTime && <p className="text-muted-foreground">Container start time: {result.startTime}s</p>}
+                {result.pullTime && (
+                  <p className="text-muted-foreground">Image pull time: {result.pullTime}s</p>
+                )}
+                {result.startTime && (
+                  <p className="text-muted-foreground">Container start time: {result.startTime}s</p>
+                )}
 
                 {result.logs && (
                   <div className="mt-3">
@@ -195,7 +203,8 @@ export function ExecutorTestModal({ isOpen, onClose, executor }: ExecutorTestMod
           {!testing && !result && (
             <div className="p-4 bg-muted/30 rounded-lg">
               <p className="text-sm text-muted-foreground">
-                This will test if the executor image can be pulled and started successfully in your cluster.
+                This will test if the executor image can be pulled and started successfully in your
+                cluster.
               </p>
             </div>
           )}

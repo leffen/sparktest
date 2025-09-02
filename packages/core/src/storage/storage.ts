@@ -1,4 +1,13 @@
-import { Executor, Definition, Run, Suite, KubernetesHealth, JobLogs, JobStatus, JobDeleteResponse } from "../types"
+import {
+  Executor,
+  Definition,
+  Run,
+  Suite,
+  KubernetesHealth,
+  JobLogs,
+  JobStatus,
+  JobDeleteResponse,
+} from "../types"
 
 export interface StorageService {
   // Executors
@@ -24,7 +33,7 @@ export interface StorageService {
   ): Promise<Run>
   subscribeToRuns: (
     callback: (payload: { eventType: string; new?: Run; old?: Run }) => void
-  ) => () => void;
+  ) => () => void
 
   // Test Suites
   getTestSuites(): Promise<Suite[]>

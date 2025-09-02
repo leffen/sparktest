@@ -1,7 +1,21 @@
 import type { StorageService } from "./storage"
 import { getFromStorage, setToStorage } from "./generic/utils"
-import type { Executor, Definition, Run, TestSuite, KubernetesHealth, JobLogs, JobStatus, JobDeleteResponse } from "../core/src/types"
-import { sampleExecutors, sampleDefinitions, sampleRuns, sampleTestSuites } from "../core/src/samples"
+import type {
+  Executor,
+  Definition,
+  Run,
+  TestSuite,
+  KubernetesHealth,
+  JobLogs,
+  JobStatus,
+  JobDeleteResponse,
+} from "../core/src/types"
+import {
+  sampleExecutors,
+  sampleDefinitions,
+  sampleRuns,
+  sampleTestSuites,
+} from "../core/src/samples"
 
 export class LocalStorageService implements StorageService {
   async getExecutors(): Promise<Executor[]> {
@@ -91,7 +105,7 @@ export class LocalStorageService implements StorageService {
 
   async createRun(
     definitionId: string,
-    options?: { name?: string; image?: string; commands?: string[] },
+    options?: { name?: string; image?: string; commands?: string[] }
   ): Promise<Run> {
     const def = await this.getDefinitionById(definitionId)
     if (!def) throw new Error("Definition not found")
@@ -112,42 +126,43 @@ export class LocalStorageService implements StorageService {
 
     return this.saveRun(run)
   }
-  subscribeToRuns(callback: (payload: { eventType: string; new?: Run; old?: Run }) => void): () => void {
+  subscribeToRuns(
+    callback: (payload: { eventType: string; new?: Run; old?: Run }) => void
+  ): () => void {
     let previousRuns: Run[] = []
-  
+
     const interval = setInterval(async () => {
       try {
         const newRuns = await this.getRuns()
-  
+
         // INSERT
-        const inserted = newRuns.filter(r => !previousRuns.some(p => p.id === r.id))
+        const inserted = newRuns.filter((r) => !previousRuns.some((p) => p.id === r.id))
         for (const run of inserted) {
           callback({ eventType: "INSERT", new: run })
         }
-  
+
         // UPDATE
         for (const run of newRuns) {
-          const prev = previousRuns.find(p => p.id === run.id)
+          const prev = previousRuns.find((p) => p.id === run.id)
           if (prev && JSON.stringify(prev) !== JSON.stringify(run)) {
             callback({ eventType: "UPDATE", new: run })
           }
         }
-  
+
         // DELETE
-        const deleted = previousRuns.filter(r => !newRuns.some(n => n.id === r.id))
+        const deleted = previousRuns.filter((r) => !newRuns.some((n) => n.id === r.id))
         for (const run of deleted) {
           callback({ eventType: "DELETE", old: run })
         }
-  
+
         previousRuns = newRuns
       } catch (err) {
         console.error("Polling error in subscribeToRuns:", err)
       }
     }, 10000)
-  
+
     return () => clearInterval(interval)
   }
-  
 
   // Test Suites
   async getTestSuites(): Promise<TestSuite[]> {

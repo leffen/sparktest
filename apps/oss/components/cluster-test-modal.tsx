@@ -128,7 +128,9 @@ export function ClusterTestModal({ isOpen, onClose }: ClusterTestModalProps) {
             <Server className="h-5 w-5" />
             Cluster Health Check
           </DialogTitle>
-          <DialogDescription>Test connectivity and health of all cluster components</DialogDescription>
+          <DialogDescription>
+            Test connectivity and health of all cluster components
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -152,7 +154,9 @@ export function ClusterTestModal({ isOpen, onClose }: ClusterTestModalProps) {
                     <div className="flex items-center gap-3">
                       {getStatusIcon(result.status)}
                       <div>
-                        <p className="font-medium capitalize">{result.component.replace("-", " ")}</p>
+                        <p className="font-medium capitalize">
+                          {result.component.replace("-", " ")}
+                        </p>
                         <p className="text-sm text-muted-foreground">{result.details}</p>
                       </div>
                     </div>
@@ -166,7 +170,8 @@ export function ClusterTestModal({ isOpen, onClose }: ClusterTestModalProps) {
           {!testing && results.length === 0 && (
             <div className="p-4 bg-muted/30 rounded-lg">
               <p className="text-sm text-muted-foreground">
-                This will test connectivity to all cluster components including API server, nodes, DNS, and networking.
+                This will test connectivity to all cluster components including API server, nodes,
+                DNS, and networking.
               </p>
             </div>
           )}
@@ -174,8 +179,9 @@ export function ClusterTestModal({ isOpen, onClose }: ClusterTestModalProps) {
           {!testing && results.length > 0 && (
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-700">
-                ✓ Cluster health check completed. {results.filter((r) => r.status === "success").length} of{" "}
-                {results.length} components are healthy.
+                ✓ Cluster health check completed.{" "}
+                {results.filter((r) => r.status === "success").length} of {results.length}{" "}
+                components are healthy.
               </p>
             </div>
           )}
