@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest"
-import { HybridStorageService } from "@sparktest/core/storage/hybrid-storage"
-import { ApiStorageService } from "@sparktest/core/storage/api-storage"
-import { LocalStorageService } from "@sparktest/core/storage/local-storage"
+import { HybridStorageService } from "@tatou/storage-service/hybrid-storage"
+import { ApiStorageService } from "@tatou/storage-service/api-storage"
+import { LocalStorageService } from "@tatou/storage-service/local-storage"
 
 // Mock the storage services
-vi.mock("@sparktest/core/storage/api-storage")
-vi.mock("@sparktest/core/storage/local-storage")
+vi.mock("@tatou/storage-service/api-storage")
+vi.mock("@tatou/storage-service/local-storage")
 
 const mockApiStorage = vi.mocked(ApiStorageService)
 const mockLocalStorage = vi.mocked(LocalStorageService)
@@ -31,10 +31,10 @@ describe("HybridStorageService", () => {
       getRunById: vi.fn(),
       createRun: vi.fn(),
       subscribeToRuns: vi.fn(),
-      getTestSuites: vi.fn(),
-      saveTestSuite: vi.fn(),
-      deleteTestSuite: vi.fn(),
-      getTestSuiteById: vi.fn(),
+      getSuites: vi.fn(),
+      saveSuite: vi.fn(),
+      deleteSuite: vi.fn(),
+      getSuiteById: vi.fn(),
       initialize: vi.fn(),
       getKubernetesHealth: vi.fn(),
       getTestRunLogs: vi.fn(),
@@ -58,10 +58,10 @@ describe("HybridStorageService", () => {
       getRunById: vi.fn(),
       createRun: vi.fn(),
       subscribeToRuns: vi.fn(),
-      getTestSuites: vi.fn(),
-      saveTestSuite: vi.fn(),
-      deleteTestSuite: vi.fn(),
-      getTestSuiteById: vi.fn(),
+      getSuites: vi.fn(),
+      saveSuite: vi.fn(),
+      deleteSuite: vi.fn(),
+      getSuiteById: vi.fn(),
       getKubernetesHealth: vi.fn(),
       getTestRunLogs: vi.fn(),
       getJobLogs: vi.fn(),
@@ -107,7 +107,12 @@ describe("HybridStorageService", () => {
 
   describe("executors", () => {
     it("should handle saveExecutor with fallback", async () => {
-      const mockExecutor = { id: "1", name: "Test Executor", image: "test", createdAt: "2023-01-01" }
+      const mockExecutor = {
+        id: "1",
+        name: "Test Executor",
+        image: "test",
+        createdAt: "2023-01-01",
+      }
       apiInstance.saveExecutor.mockRejectedValue(new Error("Network Error"))
       localInstance.saveExecutor.mockResolvedValue(mockExecutor)
 
@@ -130,7 +135,12 @@ describe("HybridStorageService", () => {
     })
 
     it("should handle getExecutorById with fallback", async () => {
-      const mockExecutor = { id: "1", name: "Test Executor", image: "test", createdAt: "2023-01-01" }
+      const mockExecutor = {
+        id: "1",
+        name: "Test Executor",
+        image: "test",
+        createdAt: "2023-01-01",
+      }
       apiInstance.getExecutorById.mockRejectedValue(new Error("Network Error"))
       localInstance.getExecutorById.mockResolvedValue(mockExecutor)
 
@@ -212,15 +222,25 @@ describe("HybridStorageService", () => {
   })
 
   describe("test suites", () => {
-    it("should handle getTestSuites with fallback", async () => {
-      const mockSuites = [{ id: "1", name: "Test Suite", description: "", testDefinitionIds: [], executionMode: "sequential" as const, createdAt: "2023-01-01", labels: [] }]
-      apiInstance.getTestSuites.mockRejectedValue(new Error("Network Error"))
-      localInstance.getTestSuites.mockResolvedValue(mockSuites)
+    it("should handle getSuites with fallback", async () => {
+      const mockSuites = [
+        {
+          id: "1",
+          name: "Test Suite",
+          description: "",
+          testDefinitionIds: [],
+          executionMode: "sequential" as const,
+          createdAt: "2023-01-01",
+          labels: [],
+        },
+      ]
+      apiInstance.getSuites.mockRejectedValue(new Error("Network Error"))
+      localInstance.getSuites.mockResolvedValue(mockSuites)
 
-      const result = await service.getTestSuites()
+      const result = await service.getSuites()
 
-      expect(apiInstance.getTestSuites).toHaveBeenCalled()
-      expect(localInstance.getTestSuites).toHaveBeenCalled()
+      expect(apiInstance.getSuites).toHaveBeenCalled()
+      expect(localInstance.getSuites).toHaveBeenCalled()
       expect(result).toEqual(mockSuites)
     })
   })
@@ -236,7 +256,14 @@ describe("HybridStorageService", () => {
 
   describe("missing API methods with fallback", () => {
     it("should handle saveDefinition with fallback", async () => {
-      const mockDefinition = { id: "1", name: "Test Definition", description: "desc", image: "test", commands: ["echo"], createdAt: "2023-01-01" }
+      const mockDefinition = {
+        id: "1",
+        name: "Test Definition",
+        description: "desc",
+        image: "test",
+        commands: ["echo"],
+        createdAt: "2023-01-01",
+      }
       apiInstance.saveDefinition.mockRejectedValue(new Error("Network Error"))
       localInstance.saveDefinition.mockResolvedValue(mockDefinition)
 
@@ -259,7 +286,14 @@ describe("HybridStorageService", () => {
     })
 
     it("should handle getDefinitionById with fallback", async () => {
-      const mockDefinition = { id: "1", name: "Test Definition", description: "desc", image: "test", commands: ["echo"], createdAt: "2023-01-01" }
+      const mockDefinition = {
+        id: "1",
+        name: "Test Definition",
+        description: "desc",
+        image: "test",
+        commands: ["echo"],
+        createdAt: "2023-01-01",
+      }
       apiInstance.getDefinitionById.mockRejectedValue(new Error("Network Error"))
       localInstance.getDefinitionById.mockResolvedValue(mockDefinition)
 
@@ -271,13 +305,13 @@ describe("HybridStorageService", () => {
     })
 
     it("should handle saveRun with fallback", async () => {
-      const mockRun = { 
-        id: "1", 
-        name: "Test Run", 
-        status: "running" as const, 
-        createdAt: "2023-01-01", 
-        image: "test:latest", 
-        command: ["echo", "test"] 
+      const mockRun = {
+        id: "1",
+        name: "Test Run",
+        status: "running" as const,
+        createdAt: "2023-01-01",
+        image: "test:latest",
+        command: ["echo", "test"],
       }
       apiInstance.saveRun.mockRejectedValue(new Error("Network Error"))
       localInstance.saveRun.mockResolvedValue(mockRun)
@@ -301,13 +335,13 @@ describe("HybridStorageService", () => {
     })
 
     it("should handle getRunById with fallback", async () => {
-      const mockRun = { 
-        id: "1", 
-        name: "Test Run", 
-        status: "running" as const, 
-        createdAt: "2023-01-01", 
-        image: "test:latest", 
-        command: ["echo", "test"] 
+      const mockRun = {
+        id: "1",
+        name: "Test Run",
+        status: "running" as const,
+        createdAt: "2023-01-01",
+        image: "test:latest",
+        command: ["echo", "test"],
       }
       apiInstance.getRunById.mockRejectedValue(new Error("Network Error"))
       localInstance.getRunById.mockResolvedValue(mockRun)
@@ -319,54 +353,54 @@ describe("HybridStorageService", () => {
       expect(result).toEqual(mockRun)
     })
 
-    it("should handle saveTestSuite with fallback", async () => {
-      const mockSuite = { 
-        id: "1", 
-        name: "Test Suite", 
-        description: "", 
-        testDefinitionIds: [], 
-        executionMode: "sequential" as const, 
-        createdAt: "2023-01-01", 
-        labels: [] 
+    it("should handle saveSuite with fallback", async () => {
+      const mockSuite = {
+        id: "1",
+        name: "Test Suite",
+        description: "",
+        testDefinitionIds: [],
+        executionMode: "sequential" as const,
+        createdAt: "2023-01-01",
+        labels: [],
       }
-      apiInstance.saveTestSuite.mockRejectedValue(new Error("Network Error"))
-      localInstance.saveTestSuite.mockResolvedValue(mockSuite)
+      apiInstance.saveSuite.mockRejectedValue(new Error("Network Error"))
+      localInstance.saveSuite.mockResolvedValue(mockSuite)
 
-      const result = await service.saveTestSuite(mockSuite)
+      const result = await service.saveSuite(mockSuite)
 
-      expect(apiInstance.saveTestSuite).toHaveBeenCalledWith(mockSuite)
-      expect(localInstance.saveTestSuite).toHaveBeenCalledWith(mockSuite)
+      expect(apiInstance.saveSuite).toHaveBeenCalledWith(mockSuite)
+      expect(localInstance.saveSuite).toHaveBeenCalledWith(mockSuite)
       expect(result).toEqual(mockSuite)
     })
 
-    it("should handle deleteTestSuite with fallback", async () => {
-      apiInstance.deleteTestSuite.mockRejectedValue(new Error("Network Error"))
-      localInstance.deleteTestSuite.mockResolvedValue(true)
+    it("should handle deleteSuite with fallback", async () => {
+      apiInstance.deleteSuite.mockRejectedValue(new Error("Network Error"))
+      localInstance.deleteSuite.mockResolvedValue(true)
 
-      const result = await service.deleteTestSuite("1")
+      const result = await service.deleteSuite("1")
 
-      expect(apiInstance.deleteTestSuite).toHaveBeenCalledWith("1")
-      expect(localInstance.deleteTestSuite).toHaveBeenCalledWith("1")
+      expect(apiInstance.deleteSuite).toHaveBeenCalledWith("1")
+      expect(localInstance.deleteSuite).toHaveBeenCalledWith("1")
       expect(result).toBe(true)
     })
 
-    it("should handle getTestSuiteById with fallback", async () => {
-      const mockSuite = { 
-        id: "1", 
-        name: "Test Suite", 
-        description: "", 
-        testDefinitionIds: [], 
-        executionMode: "sequential" as const, 
-        createdAt: "2023-01-01", 
-        labels: [] 
+    it("should handle getSuiteById with fallback", async () => {
+      const mockSuite = {
+        id: "1",
+        name: "Test Suite",
+        description: "",
+        testDefinitionIds: [],
+        executionMode: "sequential" as const,
+        createdAt: "2023-01-01",
+        labels: [],
       }
-      apiInstance.getTestSuiteById.mockRejectedValue(new Error("Network Error"))
-      localInstance.getTestSuiteById.mockResolvedValue(mockSuite)
+      apiInstance.getSuiteById.mockRejectedValue(new Error("Network Error"))
+      localInstance.getSuiteById.mockResolvedValue(mockSuite)
 
-      const result = await service.getTestSuiteById("1")
+      const result = await service.getSuiteById("1")
 
-      expect(apiInstance.getTestSuiteById).toHaveBeenCalledWith("1")
-      expect(localInstance.getTestSuiteById).toHaveBeenCalledWith("1")
+      expect(apiInstance.getSuiteById).toHaveBeenCalledWith("1")
+      expect(localInstance.getSuiteById).toHaveBeenCalledWith("1")
       expect(result).toEqual(mockSuite)
     })
   })
@@ -409,7 +443,13 @@ describe("HybridStorageService", () => {
     })
 
     it("should handle getJobStatus with fallback", async () => {
-      const mockStatus = { job_name: "test-job", status: "Running", active: 1, succeeded: 0, failed: 0 }
+      const mockStatus = {
+        job_name: "test-job",
+        status: "Running",
+        active: 1,
+        succeeded: 0,
+        failed: 0,
+      }
       apiInstance.getJobStatus.mockRejectedValue(new Error("Network Error"))
       localInstance.getJobStatus.mockResolvedValue(mockStatus)
 
@@ -435,7 +475,9 @@ describe("HybridStorageService", () => {
 
   describe("error handling", () => {
     it("should try API first and only fallback on failure", async () => {
-      const mockExecutors = [{ id: "1", name: "Test Executor", image: "test", createdAt: "2023-01-01" }]
+      const mockExecutors = [
+        { id: "1", name: "Test Executor", image: "test", createdAt: "2023-01-01" },
+      ]
       apiInstance.getExecutors.mockResolvedValue(mockExecutors)
 
       const result = await service.getExecutors()
@@ -456,7 +498,7 @@ describe("HybridStorageService", () => {
 
     it("should handle different types of API errors", async () => {
       const mockExecutors = [{ id: "1", name: "Test", image: "test", createdAt: "2023-01-01" }]
-      
+
       // Test network timeout
       apiInstance.getExecutors.mockRejectedValue(new Error("ETIMEDOUT"))
       localInstance.getExecutors.mockResolvedValue(mockExecutors)
@@ -464,7 +506,7 @@ describe("HybridStorageService", () => {
       const result = await service.getExecutors()
       expect(result).toEqual(mockExecutors)
 
-      // Test 500 error  
+      // Test 500 error
       apiInstance.getExecutors.mockRejectedValue(new Error("Internal Server Error"))
       localInstance.getExecutors.mockResolvedValue(mockExecutors)
 
@@ -480,7 +522,7 @@ describe("HybridStorageService", () => {
         throw new Error("API Error")
       })
       localInstance.subscribeToRuns.mockImplementation(() => {
-        throw new Error("Local Error") 
+        throw new Error("Local Error")
       })
 
       const unsubscribe = service.subscribeToRuns(mockCallback)

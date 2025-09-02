@@ -2,9 +2,13 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
     "paths": {
       "@/*": ["./*"],
-      "@sparktest/core": ["../../packages/core/src"]
+      "@tatou/core": ["../../packages/core/src"],
+      "@tatou/core/*": ["../../packages/core/src/*"],
+      "@tatou/storage-service": ["../../packages/storage-service"],
+      "@tatou/storage-service/*": ["../../packages/storage-service/*"]
     },
     "plugins": [
       {
@@ -12,13 +16,6 @@
       }
     ]
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

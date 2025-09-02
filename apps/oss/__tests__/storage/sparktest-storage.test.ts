@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest"
-import { SparkTestStorageService } from "@sparktest/core/storage/sparktest-storage"
-import type { Executor, Definition, Run, TestSuite } from "@sparktest/core/types"
+import { SparkTestStorageService } from "@tatou/storage-service/sparktest-storage"
+import type { Executor, Definition, Run, Suite } from "@tatou/core/types"
 
 // Mock localStorage
 const localStorageMock = {
@@ -167,8 +167,8 @@ describe("SparkTestStorageService", () => {
     })
   })
 
-  describe("test suites", () => {
-    const mockTestSuite: TestSuite = {
+  describe("suites", () => {
+    const mockSuite: Suite = {
       id: "1",
       name: "Test Suite",
       description: "Test description",
@@ -177,32 +177,32 @@ describe("SparkTestStorageService", () => {
       executionMode: "sequential",
     }
 
-    it("should get test suites", async () => {
-      localStorageMock.getItem.mockReturnValue(JSON.stringify([mockTestSuite]))
+    it("should get suites", async () => {
+      localStorageMock.getItem.mockReturnValue(JSON.stringify([mockSuite]))
 
-      const result = await service.getTestSuites()
+      const result = await service.getSuites()
       expect(Array.isArray(result)).toBe(true)
     })
 
-    it("should save test suite", async () => {
+    it("should save suite", async () => {
       localStorageMock.getItem.mockReturnValue("[]")
 
-      const result = await service.saveTestSuite(mockTestSuite)
-      expect(result).toEqual(mockTestSuite)
+      const result = await service.saveSuite(mockSuite)
+      expect(result).toEqual(mockSuite)
     })
 
-    it("should delete test suite", async () => {
-      localStorageMock.getItem.mockReturnValue(JSON.stringify([mockTestSuite]))
+    it("should delete suite", async () => {
+      localStorageMock.getItem.mockReturnValue(JSON.stringify([mockSuite]))
 
-      const result = await service.deleteTestSuite("1")
+      const result = await service.deleteSuite("1")
       expect(result).toBe(true)
     })
 
-    it("should get test suite by id", async () => {
-      localStorageMock.getItem.mockReturnValue(JSON.stringify([mockTestSuite]))
+    it("should get suite by id", async () => {
+      localStorageMock.getItem.mockReturnValue(JSON.stringify([mockSuite]))
 
-      const result = await service.getTestSuiteById("1")
-      expect(result).toEqual(mockTestSuite)
+      const result = await service.getSuiteById("1")
+      expect(result).toEqual(mockSuite)
     })
   })
 
@@ -211,35 +211,45 @@ describe("SparkTestStorageService", () => {
       const mockFetch = global.fetch as any
       mockFetch.mockRejectedValueOnce(new Error("Network error"))
 
-      await expect(service.getKubernetesHealth()).rejects.toThrow("Kubernetes integration not available")
+      await expect(service.getKubernetesHealth()).rejects.toThrow(
+        "Kubernetes integration not available"
+      )
     })
 
     it("should throw error for test run logs when API fails", async () => {
       const mockFetch = global.fetch as any
       mockFetch.mockRejectedValueOnce(new Error("Network error"))
 
-      await expect(service.getTestRunLogs("run1")).rejects.toThrow("Kubernetes integration not available")
+      await expect(service.getTestRunLogs("run1")).rejects.toThrow(
+        "Kubernetes integration not available"
+      )
     })
 
     it("should throw error for job logs when API fails", async () => {
       const mockFetch = global.fetch as any
       mockFetch.mockRejectedValueOnce(new Error("Network error"))
 
-      await expect(service.getJobLogs("job1")).rejects.toThrow("Kubernetes integration not available")
+      await expect(service.getJobLogs("job1")).rejects.toThrow(
+        "Kubernetes integration not available"
+      )
     })
 
     it("should throw error for job status when API fails", async () => {
       const mockFetch = global.fetch as any
       mockFetch.mockRejectedValueOnce(new Error("Network error"))
 
-      await expect(service.getJobStatus("job1")).rejects.toThrow("Kubernetes integration not available")
+      await expect(service.getJobStatus("job1")).rejects.toThrow(
+        "Kubernetes integration not available"
+      )
     })
 
     it("should throw error for delete job when API fails", async () => {
       const mockFetch = global.fetch as any
       mockFetch.mockRejectedValueOnce(new Error("Network error"))
 
-      await expect(service.deleteJob("job1")).rejects.toThrow("Kubernetes integration not available")
+      await expect(service.deleteJob("job1")).rejects.toThrow(
+        "Kubernetes integration not available"
+      )
     })
   })
 
@@ -258,10 +268,7 @@ describe("SparkTestStorageService", () => {
         "sparktest_definitions",
         expect.any(String)
       )
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        "sparktest_runs",
-        expect.any(String)
-      )
+      expect(localStorageMock.setItem).toHaveBeenCalledWith("sparktest_runs", expect.any(String))
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         "sparktest_test_suites",
         expect.any(String)

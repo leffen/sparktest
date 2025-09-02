@@ -1,0 +1,53 @@
+{
+  "name": "sparktest-monorepo",
+  "version": "0.2.0",
+  "private": true,
+  "description": "SparkTest monorepo for OSS packages and application",
+  "packageManager": "pnpm@10.12.4+sha512.5ea8b0deed94ed68691c9bad4c955492705c5eeb8a87ef86bc62c74a26b037b08ff9570f108b2e4dbd1dd1a9186fea925e527f141c648e85af45631074680184",
+  "scripts": {
+    "build": "pnpm build:core && pnpm build:ui && pnpm build:storage-service",
+    "build:core": "pnpm --filter '@tatou/core' build",
+    "build:ui": "pnpm --filter '@tatou/ui' build",
+    "build:storage-service": "pnpm --filter '@tatou/storage-service' build",
+    "build:packages": "pnpm build:core && pnpm build:ui && pnpm build:storage-service",
+    "build:app": "pnpm --filter '@tatou/oss' build",
+    "dev": "pnpm --filter '@tatou/oss' dev",
+    "dev:backend": "cargo run -p sparktest-bin --manifest-path backend/bin/Cargo.toml",
+    "dev:frontend": "pnpm --filter '@tatou/oss' dev",
+    "dev:all": "concurrently -k -n backend,frontend -c blue,green \"pnpm dev:backend\" \"pnpm dev:frontend\"",
+    "test": "pnpm build:packages && pnpm --filter '@tatou/oss' test",
+    "lint": "pnpm --filter './packages/*' lint && pnpm --filter '@tatou/oss' lint",
+    "type-check": "pnpm --filter './packages/*' type-check && pnpm --filter '@tatou/oss' type-check",
+    "clean": "pnpm --filter './packages/*' clean",
+    "cargo-build": "cargo build",
+    "cargo-test": "cargo test",
+    "cargo-run": "cargo run -p sparktest-bin",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint:all": "pnpm lint && pnpm format:check",
+    "fix": "pnpm format && pnpm lint",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish",
+    "changeset:status": "changeset status",
+    "changeset:test": "./scripts/test-changesets.sh",
+    "cargo-changeset": "./scripts/cargo-changeset.sh",
+    "cargo-changeset:add": "./scripts/cargo-changeset.sh add",
+    "cargo-changeset:status": "./scripts/cargo-changeset.sh status",
+    "cargo-changeset:version": "./scripts/cargo-changeset.sh version",
+    "cargo-changeset:publish": "./scripts/cargo-changeset.sh publish",
+    "cargo-changeset:test": "./scripts/cargo-changeset.sh test"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.6",
+    "concurrently": "^7.6.0",
+    "prettier": "^3.6.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5"
+  }
+}

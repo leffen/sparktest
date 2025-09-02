@@ -15,7 +15,12 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 // Navigation items
 const navigationItems = [
@@ -25,17 +30,17 @@ const navigationItems = [
     icon: BarChart3,
   },
   {
-    title: "Test Runs",
+    title: "Runs",
     url: "/runs",
     icon: Play,
   },
   {
-    title: "Test Definitions",
-    url: "/runs",
+    title: "Definitions",
+    url: "/definitions",
     icon: FileText,
   },
   {
-    title: "Test Suites",
+    title: "Suites",
     url: "/suites",
     icon: Layers,
   },
@@ -49,13 +54,13 @@ const navigationItems = [
 // Create menu items
 const createItems = [
   {
-    title: "New Test Run",
-    url: "/new",
-    description: "Create a new test run",
+    title: "New Run",
+    url: "/runs/new",
+    description: "Create a new run",
   },
   {
     title: "New Definition",
-    url: "/runs/new",
+    url: "/definitions/new",
     description: "Define a new test case",
   },
   {
@@ -91,7 +96,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <SidebarMenu>
           {navigationItems.map((item) => {
-            const isActive = pathname === item.url || (item.url !== "/" && pathname.startsWith(item.url))
+            const isActive =
+              pathname === item.url || (item.url !== "/" && pathname.startsWith(item.url))
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>

@@ -6,20 +6,20 @@ import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SuiteForm } from "@/components/suite-form"
 import { useToast } from "@/components/ui/use-toast"
-import type { TestSuite } from "@sparktest/core/types"
-import { storage } from "@sparktest/core/storage"
+import { storage } from "@tatou/storage-service"
+import type { Suite } from "@tatou/core/types"
 
 export default function EditSuitePage({ params }: { params: { id: string } }) {
   const { id } = params
   const { toast } = useToast()
-  const [suite, setSuite] = useState<TestSuite | null>(null)
+  const [suite, setSuite] = useState<Suite | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const loadSuite = async () => {
       setLoading(true)
       try {
-        const loadedSuite = await storage.getTestSuiteById(id)
+        const loadedSuite = await storage.getSuiteById(id)
         if (!loadedSuite) {
           toast({
             title: "Suite not found",
@@ -40,13 +40,13 @@ export default function EditSuitePage({ params }: { params: { id: string } }) {
         setLoading(false)
       }
     }
-    
+
     loadSuite()
   }, [id, toast])
 
   if (loading) {
     return (
-      <div className="container py-6">
+      <div className="container py-6 max-w-2xl mx-auto">
         <div className="flex flex-col items-center justify-center min-h-[400px]">
           <div className="flex items-center justify-center">
             <svg
@@ -75,10 +75,10 @@ export default function EditSuitePage({ params }: { params: { id: string } }) {
       </div>
     )
   }
-  
+
   if (!suite) {
     return (
-      <div className="container py-6">
+      <div className="container py-6 max-w-2xl mx-auto">
         <div className="flex flex-col items-center justify-center min-h-[400px]">
           <p className="text-muted-foreground">Suite not found.</p>
           <Link href="/suites" className="mt-4 text-blue-600 hover:underline">
@@ -90,23 +90,17 @@ export default function EditSuitePage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="container py-6">
-      <div className="flex items-center gap-4 mb-6">
+    <div className="container py-6 max-w-2xl mx-auto">
+      <div className="flex items-center gap-2 mb-6">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/suites">
             <ArrowLeft className="h-4 w-4" />
+            <span className="sr-only">Back</span>
           </Link>
         </Button>
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Edit Test Suite
-          </h1>
-          <p className="text-muted-foreground mt-1">Update your test suite configuration</p>
-        </div>
+        <h1 className="text-2xl font-bold">Edit Test Suite</h1>
       </div>
-      <div className="max-w-2xl">
-        <SuiteForm existingSuite={suite} />
-      </div>
+      <SuiteForm existingSuite={suite} />
     </div>
   )
 }

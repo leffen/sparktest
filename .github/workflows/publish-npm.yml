@@ -1,0 +1,100 @@
+name: Publish NPM Packages
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enable Corepack and install pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org/"
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Create dynamic .npmrc for publishing
+        run: |
+          echo "Creating .npmrc for publishing..."
+          echo "@tatou:registry=https://registry.npmjs.org/" > .npmrc
+          echo "//registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN" >> .npmrc
+          echo "access=public" >> .npmrc
+          echo "publish-config.access=public" >> .npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Debug NPM authentication setup
+        run: |
+          echo "Checking environment variables..."
+          echo "NODE_AUTH_TOKEN is set: $([[ -n "$NODE_AUTH_TOKEN" ]] && echo "YES" || echo "NO")"
+          echo "NPM_TOKEN is set: $([[ -n "$NPM_TOKEN" ]] && echo "YES" || echo "NO")"
+          echo "Current .npmrc content:"
+          cat .npmrc
+          echo "npm config list (excluding sensitive data):"
+          npm config list --json | jq 'del(.["//registry.npmjs.org/:_authToken"])'
+          echo "npm whoami test (should succeed if authenticated):"
+          npm whoami || echo "Authentication failed - this will cause publish to fail"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build packages
+        run: pnpm build:packages
+
+      - name: Setup git for changeset comparison
+        run: |
+          echo "Setting up git references for changeset..."
+          # Ensure we have the main branch reference for changeset comparison
+          git fetch origin main:main || echo "Main branch already available"
+          git branch -a
+          echo "Current git status:"
+          git status
+
+      - name: Check for changeset updates
+        run: |
+          echo "Checking changeset status..."
+          npx changeset status
+
+          # Check if there are any changesets to publish
+          # Handle both cases: empty output and proper JSON with empty releases array
+          CHANGESET_JSON=$(npx changeset status --output=json)
+          if [ -z "$CHANGESET_JSON" ]; then
+            echo "No changeset output, no packages to publish"
+            echo "HAS_CHANGESETS=false" >> $GITHUB_ENV
+          elif echo "$CHANGESET_JSON" | jq -e '.releases | length > 0' > /dev/null 2>&1; then
+            echo "HAS_CHANGESETS=true" >> $GITHUB_ENV
+            echo "Found packages to publish"
+          else
+            echo "HAS_CHANGESETS=false" >> $GITHUB_ENV
+            echo "No packages need to be published"
+          fi
+
+      - name: Publish packages with changesets
+        if: env.HAS_CHANGESETS == 'true'
+        run: |
+          echo "Publishing packages using changesets..."
+          npx changeset publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: No packages to publish
+        if: env.HAS_CHANGESETS == 'false'
+        run: |
+          echo "🎉 No packages have changes to publish"
+          echo "All packages are up to date!"

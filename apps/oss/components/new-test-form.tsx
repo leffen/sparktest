@@ -7,17 +7,30 @@ import { useRouter } from "next/navigation"
 import { Plus, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export function NewTestForm() {
   const router = useRouter()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [testDefinitions, setTestDefinitions] = useState<{ id: string; name: string }[]>([])
+  const [testDefinitions, setDefinitions] = useState<{ id: string; name: string }[]>([])
   const [selectedTestDefId, setSelectedTestDefId] = useState<string>("")
 
   const [formData, setFormData] = useState({
@@ -30,7 +43,7 @@ export function NewTestForm() {
     const fetchDefs = async () => {
       const res = await fetch("http://localhost:3001/api/test-definitions")
       const defs = await res.json()
-      setTestDefinitions(defs)
+      setDefinitions(defs)
     }
     fetchDefs()
   }, [])
@@ -83,7 +96,7 @@ export function NewTestForm() {
         description: `Test ID: ${data.id}`,
       })
 
-      router.push('/')
+      router.push("/")
     } catch (error) {
       toast({
         title: "Error creating test",
@@ -101,7 +114,8 @@ export function NewTestForm() {
         <CardHeader>
           <CardTitle>Test Configuration</CardTitle>
           <CardDescription>
-            Configure your test to run in Kubernetes. SparkTest will create a job based on these settings.
+            Configure your test to run in Kubernetes. SparkTest will create a job based on these
+            settings.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -164,7 +178,12 @@ export function NewTestForm() {
                     required={index === 0}
                   />
                   {index > 0 && (
-                    <Button type="button" variant="outline" size="icon" onClick={() => removeCommand(index)}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => removeCommand(index)}
+                    >
                       <Trash2 className="h-4 w-4" />
                       <span className="sr-only">Remove command</span>
                     </Button>
@@ -178,7 +197,9 @@ export function NewTestForm() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button variant="outline" type="button" onClick={() => router.push("/")}>Cancel</Button>
+          <Button variant="outline" type="button" onClick={() => router.push("/")}>
+            Cancel
+          </Button>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Creating..." : "Create Test"}
           </Button>

@@ -1,28 +1,24 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Plus, Play, Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/components/ui/use-toast"
-import { storage } from "@sparktest/core/storage"
-import type { Definition } from "@sparktest/core/types"
+import { storage } from "@tatou/storage-service"
+import type { Definition } from "@tatou/core/types"
 
-export function TestDefinitionsList() {
-  const [testDefinitions, setTestDefinitions] = useState<Definition[]>([])
+export function DefinitionsList() {
+  const [testDefinitions, setDefinitions] = useState<Definition[]>([])
   const [loading, setLoading] = useState(true)
   const [runningTests, setRunningTests] = useState<string[]>([])
   const { toast } = useToast()
 
-  useEffect(() => {
-    loadTestDefinitions()
-  }, [])
-
-  const loadTestDefinitions = async () => {
+  const loadDefinitions = useCallback(async () => {
     try {
       const data = await storage.getDefinitions()
-      setTestDefinitions(data)
+      setDefinitions(data)
     } catch (error) {
       toast({
         title: "Error loading test definitions",
@@ -32,7 +28,11 @@ export function TestDefinitionsList() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    loadDefinitions()
+  }, [loadDefinitions])
 
   const handleRunTest = async (testId: string) => {
     setRunningTests((prev) => [...prev, testId])
@@ -57,7 +57,7 @@ export function TestDefinitionsList() {
   const handleDeleteTest = async (testId: string) => {
     try {
       await storage.deleteDefinition(testId)
-      setTestDefinitions((prev) => prev.filter((test) => test.id !== testId))
+      setDefinitions((prev) => prev.filter((test) => test.id !== testId))
       toast({
         title: "Test definition deleted",
         description: "The test definition has been removed",
@@ -123,9 +123,9 @@ export function TestDefinitionsList() {
                   <p>
                     <strong>Commands:</strong> {test.commands.join(", ")}
                   </p>
-                  {test.executor_id && (
+                  {test.executorId && (
                     <p>
-                      <strong>Executor:</strong> {test.executor_id}
+                      <strong>Executor:</strong> {test.executorId}
                     </p>
                   )}
                 </div>

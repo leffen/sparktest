@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { useEffect, useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
-import { formatDistanceToNow } from "@sparktest/core/utils"
-import type { Executor } from "@sparktest/core/types"
-import { storage } from "@sparktest/core/storage"
+import { formatDistanceToNow } from "@tatou/core"
+import { storage } from "@tatou/storage-service"
+import type { Executor } from "@tatou/core/types"
 
 export default function ExecutorsPage() {
   const { toast } = useToast()
@@ -36,7 +36,7 @@ export default function ExecutorsPage() {
         title: "Executor deleted",
         description: "The executor has been removed successfully.",
       })
-    } catch (error) {
+    } catch {
       toast({
         title: "Error deleting executor",
         description: "Failed to delete the executor.",
@@ -50,8 +50,8 @@ export default function ExecutorsPage() {
   const filteredExecutors = executors.filter(
     (executor) =>
       executor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      executor.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      executor.id.toLowerCase().includes(searchQuery.toLowerCase()),
+      executor.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      executor.id.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   return (
@@ -78,7 +78,7 @@ export default function ExecutorsPage() {
         <div className="relative w-full max-w-sm">
           <Input
             placeholder="Search executors..."
-            className="pl-10 bg-slate-50 dark:bg-slate-800 border-0 focus-visible:ring-1"
+            className="pl-10 bg-background border focus-visible:ring-1"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -100,7 +100,7 @@ export default function ExecutorsPage() {
       </div>
 
       {filteredExecutors.length === 0 ? (
-        <Card className="p-12 text-center bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 border-dashed">
+        <Card className="p-12 text-center bg-card border-dashed">
           <div className="flex flex-col items-center gap-4">
             <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center">
               <Cpu className="h-8 w-8 text-blue-600 dark:text-blue-400" />
@@ -133,7 +133,7 @@ export default function ExecutorsPage() {
           {filteredExecutors.map((executor) => (
             <Card
               key={executor.id}
-              className="group hover:shadow-lg transition-all duration-200 bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 border-slate-200 dark:border-slate-700"
+              className="group hover:shadow-lg transition-all duration-200 bg-card border-border"
             >
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-3">
@@ -141,7 +141,7 @@ export default function ExecutorsPage() {
                     <Cpu className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">{executor.name}</h3>
+                    <h3 className="font-semibold text-foreground">{executor.name}</h3>
                     <p className="text-sm text-muted-foreground">{executor.image}</p>
                   </div>
                 </CardTitle>
@@ -152,7 +152,9 @@ export default function ExecutorsPage() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Command:</span>
-                    <code className="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">{executor.command}</code>
+                    <code className="text-xs bg-muted px-2 py-1 rounded text-muted-foreground">
+                      {executor.command}
+                    </code>
                   </div>
 
                   {executor.supportedFileTypes && executor.supportedFileTypes.length > 0 && (
@@ -165,10 +167,12 @@ export default function ExecutorsPage() {
                     </div>
                   )}
 
-                  <p className="text-xs text-muted-foreground">Created {formatDistanceToNow(executor.createdAt)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Created {formatDistanceToNow(executor.createdAt)}
+                  </p>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between border-t pt-4 bg-slate-50/50 dark:bg-slate-800/50">
+              <CardFooter className="flex justify-between border-t pt-4 bg-muted/50">
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" asChild>
                     <Link href={`/executors/edit/${executor.id}`}>

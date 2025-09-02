@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { Plus, Play, Trash2, Layers } from "lucide-react"
 
@@ -8,84 +8,37 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { useToast } from "@/components/ui/use-toast"
-import { formatDistanceToNow } from "@sparktest/core/utils"
-import type { TestSuite } from "@sparktest/core/types"
-import { storage } from "@sparktest/core/storage"
+import { formatDistanceToNow } from "@tatou/core"
+import type { Suite } from "@tatou/core/types"
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal"
+import { useSuites, useDeleteSuite, useRunSuite } from "@/hooks/use-queries"
 
-export default function TestSuitesPage() {
-  const { toast } = useToast()
-  const [testSuites, setTestSuites] = useState<TestSuite[]>([])
+export default function SuitesPage() {
+  const { data: suites = [], isLoading, error } = useSuites()
+  const deleteSuiteMutation = useDeleteSuite()
+  const runSuiteMutation = useRunSuite()
+
   const [searchQuery, setSearchQuery] = useState("")
-  const [isDeleting, setIsDeleting] = useState<string | null>(null)
-  const [isRunning, setIsRunning] = useState<string | null>(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const [suiteToDelete, setSuiteToDelete] = useState<TestSuite | null>(null)
-  const initializedRef = useRef(false)
-  const [selectedSuite, setSelectedSuite] = useState<TestSuite | null>(null)
+  const [suiteToDelete, setSuiteToDelete] = useState<Suite | null>(null)
 
-  // Load test suites from storage
-  useEffect(() => {
-    if (!initializedRef.current) {
-      const fetchTestSuites = async () => {
-        try {
-          const suites = await storage.getTestSuites()
-          setTestSuites(suites)
-        } catch (error) {
-          console.error("Error fetching test suites:", error)
-          toast({
-            title: "Error loading test suites",
-            description: "Failed to load test suites. Please try again.",
-            variant: "destructive",
-          })
-        } finally {
-          initializedRef.current = true
-        }
-      }
-      
-      fetchTestSuites()
-    }
-  }, [])
-
-  const handleDelete = async (id: string) => {
-    setIsDeleting(id)
-
-    try {
-      const success = await storage.deleteTestSuite(id)
-      
-      if (success) {
-        setTestSuites((prev) => prev.filter((suite) => suite.id !== id))
-        
-        toast({
-          title: "Test suite deleted",
-          description: "The test suite has been removed successfully.",
-        })
-      } else {
-        throw new Error("Failed to delete test suite")
-      }
-    } catch (error) {
-      console.error("Error deleting test suite:", error)
-      toast({
-        title: "Error deleting test suite",
-        description: "Failed to delete the test suite. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsDeleting(null)
-      setDeleteModalOpen(false)
-      setSuiteToDelete(null)
-    }
+  const handleDelete = (suite: Suite) => {
+    deleteSuiteMutation.mutate(suite.id, {
+      onSuccess: () => {
+        setDeleteModalOpen(false)
+        setSuiteToDelete(null)
+      },
+    })
   }
 
-  const handleDeleteClick = (suite: TestSuite) => {
+  const handleDeleteClick = (suite: Suite) => {
     setSuiteToDelete(suite)
     setDeleteModalOpen(true)
   }
 
   const handleDeleteConfirm = () => {
     if (suiteToDelete) {
-      handleDelete(suiteToDelete.id)
+      handleDelete(suiteToDelete)
     }
   }
 
@@ -94,63 +47,16 @@ export default function TestSuitesPage() {
     setSuiteToDelete(null)
   }
 
-  const handleRun = (suite: TestSuite) => {
-    setSelectedSuite(suite)
+  const handleRunSuite = (suite: Suite) => {
+    runSuiteMutation.mutate(suite)
   }
 
-  const handleRunSuite = async (suite: TestSuite) => {
-    setIsRunning(suite.id)
-
-    try {
-      // Get all test definitions in the suite
-      const definitions = await Promise.all(
-        suite.testDefinitionIds.map(id => storage.getDefinitionById(id))
-      )
-      
-      // Filter out any undefined definitions
-      const validDefinitions = definitions.filter(def => def !== undefined)
-      
-      if (validDefinitions.length === 0) {
-        throw new Error("No valid test definitions found in suite")
-      }
-      
-      // Create runs for each definition based on execution mode
-      if (suite.executionMode === "sequential") {
-        // Run tests one after another
-        for (const def of validDefinitions) {
-          if (def) {
-            await storage.createRun(def.id)
-          }
-        }
-      } else {
-        // Run tests in parallel
-        await Promise.all(
-          validDefinitions.map(def => def && storage.createRun(def.id))
-        )
-      }
-
-      toast({
-        title: "Test suite started",
-        description: `Running ${validDefinitions.length} tests in ${suite.executionMode} mode.`,
-      })
-    } catch (error) {
-      console.error("Error running test suite:", error)
-      toast({
-        title: "Error starting test suite",
-        description: "Failed to start the test suite. Please check if all test definitions exist.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsRunning(null)
-    }
-  }
-
-  // Filter test suites based on search query
-  const filteredSuites = testSuites.filter(
+  // Filter suites based on search query
+  const filteredSuites = suites.filter(
     (suite) =>
       suite.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       suite.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      suite.labels?.some((label) => label.toLowerCase().includes(searchQuery.toLowerCase())),
+      suite.labels?.some((label) => label.toLowerCase().includes(searchQuery.toLowerCase()))
   )
 
   return (
@@ -158,7 +64,7 @@ export default function TestSuitesPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Test Suites
+            Suites
           </h1>
           <p className="text-muted-foreground mt-1">Group related tests into logical test sets</p>
         </div>
@@ -198,7 +104,41 @@ export default function TestSuitesPage() {
         </div>
       </div>
 
-      {filteredSuites.length === 0 ? (
+      {isLoading ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {Array(6)
+            .fill(null)
+            .map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardHeader className="pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+                    <div className="flex-1">
+                      <div className="h-5 bg-slate-200 dark:bg-slate-700 rounded w-32 mb-2"></div>
+                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded mb-4"></div>
+                  <div className="h-16 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                </CardContent>
+              </Card>
+            ))}
+        </div>
+      ) : error ? (
+        <Card className="p-12 text-center">
+          <div className="flex flex-col items-center gap-4">
+            <Layers className="h-16 w-16 text-red-500" />
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Failed to load suites</h3>
+              <p className="text-muted-foreground mb-4">
+                There was an error loading the suites. Please try refreshing the page.
+              </p>
+            </div>
+          </div>
+        </Card>
+      ) : filteredSuites.length === 0 ? (
         <Card className="p-12 text-center bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 border-dashed">
           <div className="flex flex-col items-center gap-4">
             <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 flex items-center justify-center">
@@ -206,12 +146,12 @@ export default function TestSuitesPage() {
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-2">
-                {searchQuery ? "No test suites match your search" : "No test suites yet"}
+                {searchQuery ? "No suites match your search" : "No suites yet"}
               </h3>
               <p className="text-muted-foreground mb-4">
                 {searchQuery
                   ? "Try adjusting your search terms."
-                  : "Create your first test suite to group related tests together."}
+                  : "Create your first suite to group related tests together."}
               </p>
               {!searchQuery && (
                 <Button
@@ -220,7 +160,7 @@ export default function TestSuitesPage() {
                 >
                   <Link href="/suites/new">
                     <Plus className="mr-2 h-4 w-4" />
-                    Create Test Suite
+                    Create Suite
                   </Link>
                 </Button>
               )}
@@ -240,8 +180,12 @@ export default function TestSuitesPage() {
                     <Layers className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">{suite.name}</h3>
-                    <p className="text-sm text-muted-foreground">{suite.testDefinitionIds.length} tests</p>
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                      {suite.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {suite.testDefinitionIds.length} tests
+                    </p>
                   </div>
                 </CardTitle>
               </CardHeader>
@@ -266,7 +210,9 @@ export default function TestSuitesPage() {
                     </div>
                   )}
 
-                  <p className="text-xs text-muted-foreground">Created {formatDistanceToNow(suite.createdAt)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Created {formatDistanceToNow(suite.createdAt)}
+                  </p>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between border-t pt-4 bg-slate-50/50 dark:bg-slate-800/50">
@@ -279,9 +225,9 @@ export default function TestSuitesPage() {
                     size="sm"
                     className="text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 dark:text-red-400 dark:hover:bg-red-950 dark:hover:text-red-300"
                     onClick={() => handleDeleteClick(suite)}
-                    disabled={isDeleting === suite.id}
+                    disabled={deleteSuiteMutation.isPending}
                   >
-                    {isDeleting === suite.id ? (
+                    {deleteSuiteMutation.isPending && deleteSuiteMutation.variables === suite.id ? (
                       <svg
                         className="h-4 w-4 animate-spin"
                         xmlns="http://www.w3.org/2000/svg"
@@ -310,10 +256,10 @@ export default function TestSuitesPage() {
                 <Button
                   size="sm"
                   onClick={() => handleRunSuite(suite)}
-                  disabled={isRunning === suite.id}
+                  disabled={runSuiteMutation.isPending}
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
                 >
-                  {isRunning === suite.id ? (
+                  {runSuiteMutation.isPending && runSuiteMutation.variables?.id === suite.id ? (
                     <>
                       <svg
                         className="mr-2 h-4 w-4 animate-spin"
@@ -354,11 +300,11 @@ export default function TestSuitesPage() {
         isOpen={deleteModalOpen}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
-        isDeleting={isDeleting === suiteToDelete?.id}
-        title="Delete Test Suite"
-        description="Are you sure you want to delete this test suite? This will permanently remove the suite configuration and cannot be undone. Individual test definitions will remain unchanged."
+        isDeleting={deleteSuiteMutation.isPending}
+        title="Delete Suite"
+        description="Are you sure you want to delete this suite? This will permanently remove the suite configuration and cannot be undone. Individual test definitions will remain unchanged."
         itemName={suiteToDelete?.name}
-        itemType="Test Suite"
+        itemType="Suite"
       />
     </div>
   )

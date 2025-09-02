@@ -4,14 +4,20 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Plus, Play, Edit, Trash2, FileText, Github, ExternalLink } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { storage } from "@sparktest/core/storage"
+import {
+  Button,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Input,
+  Badge,
+} from "@tatou/ui"
+import { storage } from "@tatou/storage-service"
 import { useToast } from "@/components/ui/use-toast"
-import { formatDistanceToNow } from "@sparktest/core/utils"
-import type { Definition } from "@sparktest/core/types"
+import { formatDistanceToNow } from "@tatou/core"
+import type { Definition } from "@tatou/core/types"
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal"
 
 export default function DefinitionsPage() {
@@ -38,12 +44,12 @@ export default function DefinitionsPage() {
       setDefinitions(defs)
       toast({
         title: "Definition deleted",
-        description: "The test definition has been removed successfully.",
+        description: "The definition has been removed successfully.",
       })
-    } catch (error) {
+    } catch {
       toast({
         title: "Error deleting definition",
-        description: "Failed to delete the test definition.",
+        description: "Failed to delete the definition.",
         variant: "destructive",
       })
     } finally {
@@ -76,7 +82,7 @@ export default function DefinitionsPage() {
         title: "Test started",
         description: "Your test run has been created and is starting.",
       })
-    } catch (error) {
+    } catch {
       toast({
         title: "Error starting test",
         description: "Failed to create the test run.",
@@ -89,7 +95,7 @@ export default function DefinitionsPage() {
     (def) =>
       def.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       def.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      def.id.toLowerCase().includes(searchQuery.toLowerCase()),
+      def.id.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   return (
@@ -97,7 +103,7 @@ export default function DefinitionsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Test Definitions
+            Definitions
           </h1>
           <p className="text-muted-foreground mt-1">Manage your reusable test blueprints</p>
         </div>
@@ -145,10 +151,12 @@ export default function DefinitionsPage() {
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-2">
-                {searchQuery ? "No definitions match your search" : "No test definitions yet"}
+                {searchQuery ? "No definitions match your search" : "No definitions yet"}
               </h3>
               <p className="text-muted-foreground mb-4">
-                {searchQuery ? "Try adjusting your search terms." : "Create your first test definition to get started."}
+                {searchQuery
+                  ? "Try adjusting your search terms."
+                  : "Create your first definition to get started."}
               </p>
               {!searchQuery && (
                 <Button
@@ -177,13 +185,17 @@ export default function DefinitionsPage() {
                     <FileText className="h-5 w-5" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">{definition.name}</h3>
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                      {definition.name}
+                    </h3>
                     <p className="text-sm text-muted-foreground">{definition.image}</p>
                   </div>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground line-clamp-2">{definition.description}</p>
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {definition.description}
+                </p>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
@@ -228,7 +240,9 @@ export default function DefinitionsPage() {
                     </div>
                   )}
 
-                  <p className="text-xs text-muted-foreground">Created {formatDistanceToNow(definition.createdAt)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Created {formatDistanceToNow(definition.createdAt)}
+                  </p>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between border-t pt-4 bg-slate-50/50 dark:bg-slate-800/50">
@@ -290,10 +304,10 @@ export default function DefinitionsPage() {
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         isDeleting={isDeleting === definitionToDelete?.id}
-        title="Delete Test Definition"
-        description="Are you sure you want to delete this test definition? This will permanently remove the test configuration and cannot be undone."
+        title="Delete Definition"
+        description="Are you sure you want to delete this definition? This will permanently remove the test configuration and cannot be undone."
         itemName={definitionToDelete?.name}
-        itemType="Test Definition"
+        itemType="Definition"
       />
     </div>
   )
