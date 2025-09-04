@@ -1,6 +1,6 @@
 [package]
 name = "sparktest-api"
-version = "1.2.1"
+version = "2.0.0"
 edition = "2021"
 description = "API server and Kubernetes integration for SparkTest"
 license = "MIT"
@@ -8,7 +8,7 @@ repository = "https://github.com/kevintatou/sparktest"
 homepage = "https://github.com/kevintatou/sparktest"
 
 [dependencies]
-sparktest-core = { path = "../core" }
+sparktest-core = { version = "2.0.0", path = "../core" }
 axum = "0.7"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
