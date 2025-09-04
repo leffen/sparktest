@@ -1,4 +1,13 @@
-import type { Executor, Definition, Run, Suite, KubernetesHealth, JobLogs, JobStatus, JobDeleteResponse } from "../types"
+import type {
+  Executor,
+  Definition,
+  Run,
+  Suite,
+  KubernetesHealth,
+  JobLogs,
+  JobStatus,
+  JobDeleteResponse,
+} from "../types"
 import { StorageService } from "./storage"
 
 const API_BASE = "http://localhost:3001/api"
@@ -88,7 +97,7 @@ export class ApiStorageService implements StorageService {
   async saveRun(run: Run): Promise<Run> {
     const method = run.id ? "PUT" : "POST"
     const url = run.id ? `${API_BASE}/test-runs/${run.id}` : `${API_BASE}/test-runs`
-    
+
     // Convert camelCase to snake_case for the API
     const payload: any = {
       ...run,
@@ -99,7 +108,7 @@ export class ApiStorageService implements StorageService {
     delete payload.createdAt
     delete payload.definitionId
     delete payload.executorId
-    
+
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
@@ -114,26 +123,28 @@ export class ApiStorageService implements StorageService {
     return res.ok
   }
 
-  subscribeToRuns(callback: (payload: { eventType: string; new?: Run; old?: Run }) => void): () => void {
+  subscribeToRuns(
+    callback: (payload: { eventType: string; new?: Run; old?: Run }) => void
+  ): () => void {
     let previousRuns: Run[] = []
 
     const interval = setInterval(async () => {
       try {
         const newRuns = await this.getRuns()
 
-        const newOnly = newRuns.filter(r => !previousRuns.some(p => p.id === r.id))
+        const newOnly = newRuns.filter((r) => !previousRuns.some((p) => p.id === r.id))
         for (const run of newOnly) {
           callback({ eventType: "INSERT", new: run })
         }
 
         for (const run of newRuns) {
-          const prev = previousRuns.find(p => p.id === run.id)
+          const prev = previousRuns.find((p) => p.id === run.id)
           if (prev && JSON.stringify(prev) !== JSON.stringify(run)) {
             callback({ eventType: "UPDATE", new: run })
           }
         }
 
-        const deleted = previousRuns.filter(r => !newRuns.some(n => n.id === r.id))
+        const deleted = previousRuns.filter((r) => !newRuns.some((n) => n.id === r.id))
         for (const run of deleted) {
           callback({ eventType: "DELETE", old: run })
         }
@@ -168,9 +179,9 @@ export class ApiStorageService implements StorageService {
   async getTestSuites(): Promise<Suite[]> {
     const res = await fetch(`${API_BASE}/test-suites`)
     if (!res.ok) throw new Error("Failed to fetch test suites")
-    
-    const data = await res.json();
-    
+
+    const data = await res.json()
+
     // Convert snake_case to camelCase for each suite
     return data.map((suite: any) => ({
       id: suite.id,
@@ -180,7 +191,7 @@ export class ApiStorageService implements StorageService {
       executionMode: suite.execution_mode as "sequential" | "parallel",
       createdAt: suite.created_at || new Date().toISOString(),
       labels: suite.labels || [],
-    }));
+    }))
   }
 
   async saveTestSuite(suite: Suite): Promise<Suite> {
@@ -196,10 +207,10 @@ export class ApiStorageService implements StorageService {
       test_definition_ids: suite.testDefinitionIds.map((id: string) => {
         // Check if ID is already a UUID
         if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-          return id;
+          return id
         }
         // Generate a deterministic UUID from the string ID
-        return `00000000-0000-0000-0000-${id.padStart(12, '0').substring(0, 12)}`;
+        return `00000000-0000-0000-0000-${id.padStart(12, "0").substring(0, 12)}`
       }),
       labels: suite.labels || [],
       description: suite.description || "",
@@ -221,27 +232,27 @@ export class ApiStorageService implements StorageService {
 
   async deleteTestSuite(id: string): Promise<boolean> {
     // Convert to UUID format if needed
-    let uuidId = id;
+    let uuidId = id
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-      uuidId = `00000000-0000-0000-0000-${id.padStart(12, '0').substring(0, 12)}`;
+      uuidId = `00000000-0000-0000-0000-${id.padStart(12, "0").substring(0, 12)}`
     }
-    
+
     const res = await fetch(`${API_BASE}/test-suites/${uuidId}`, { method: "DELETE" })
     return res.ok
   }
 
   async getTestSuiteById(id: string): Promise<Suite | undefined> {
     // Convert to UUID format if needed
-    let uuidId = id;
+    let uuidId = id
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-      uuidId = `00000000-0000-0000-0000-${id.padStart(12, '0').substring(0, 12)}`;
+      uuidId = `00000000-0000-0000-0000-${id.padStart(12, "0").substring(0, 12)}`
     }
-    
+
     const res = await fetch(`${API_BASE}/test-suites/${uuidId}`)
     if (!res.ok) throw new Error("Failed to fetch test suite")
-    
-    const data = await res.json();
-    
+
+    const data = await res.json()
+
     // Convert snake_case back to camelCase
     return {
       id: data.id,
@@ -251,7 +262,7 @@ export class ApiStorageService implements StorageService {
       executionMode: data.execution_mode as "sequential" | "parallel",
       createdAt: data.created_at || new Date().toISOString(),
       labels: data.labels || [],
-    };
+    }
   }
 
   // Kubernetes Integration
@@ -285,7 +296,7 @@ export class ApiStorageService implements StorageService {
     return await res.json()
   }
 
-  initialize(): void {
+  async initialize(): Promise<void> {
     // No-op for API mode
   }
 }

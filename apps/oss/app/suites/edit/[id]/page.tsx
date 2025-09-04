@@ -19,7 +19,7 @@ export default function EditSuitePage({ params }: { params: { id: string } }) {
     const loadSuite = async () => {
       setLoading(true)
       try {
-        const loadedSuite = await storage.getSuiteById(id)
+        const loadedSuite = await storage.getTestSuiteById(id)
         if (!loadedSuite) {
           toast({
             title: "Suite not found",

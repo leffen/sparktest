@@ -1,6 +1,6 @@
 ---
 "@tatou/core": patch
-"@tatou/storage-service": patch  
+"@tatou/storage-service": patch
 "@tatou/ui": patch
 ---
 

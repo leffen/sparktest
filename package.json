@@ -36,7 +36,16 @@
     "cargo-changeset:status": "./scripts/cargo-changeset.sh status",
     "cargo-changeset:version": "./scripts/cargo-changeset.sh version",
     "cargo-changeset:publish": "./scripts/cargo-changeset.sh publish",
-    "cargo-changeset:test": "./scripts/cargo-changeset.sh test"
+    "cargo-changeset:test": "./scripts/cargo-changeset.sh test",
+    "check": "pnpm check:format && pnpm check:lint && pnpm check:types && pnpm check:build && pnpm check:test",
+    "check:format": "prettier --check .",
+    "check:lint": "pnpm --filter './packages/*' lint && pnpm --filter '@tatou/oss' lint",
+    "check:types": "pnpm --filter './packages/*' type-check && pnpm --filter '@tatou/oss' type-check",
+    "check:build": "pnpm build:packages && pnpm build:app",
+    "check:test": "pnpm test && cargo test",
+    "check:coverage": "pnpm --filter '@tatou/oss' test:coverage",
+    "precommit": "pnpm check",
+    "ci": "pnpm check && pnpm check:coverage"
   },
   "workspaces": [
     "apps/*",

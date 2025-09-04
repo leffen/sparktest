@@ -23,7 +23,7 @@ export default function SuiteDetailsPage({ params }: { params: Promise<{ id: str
     const loadSuiteAndDefinitions = async () => {
       try {
         // Load the suite from storage
-        const loadedSuite = await storage.getSuiteById(id)
+        const loadedSuite = await storage.getTestSuiteById(id)
         if (!loadedSuite) {
           toast({
             title: "Suite not found",
