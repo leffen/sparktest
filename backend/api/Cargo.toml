@@ -1,6 +1,6 @@
 [package]
 name = "sparktest-api"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2021"
 description = "API server and Kubernetes integration for SparkTest"
 license = "MIT"
