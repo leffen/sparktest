@@ -46,6 +46,7 @@
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
+    "lint": "echo 'No linting configured for core package'",
     "prepublishOnly": "pnpm build"
   },
   "publishConfig": {

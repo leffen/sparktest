@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { formatDistanceToNow } from "@sparktest/core/utils"
+import { formatDistanceToNow } from "@tatou/core/utils"
 
 interface TestResult {
   success: boolean
@@ -64,6 +64,7 @@ export function TestWebhookModal({ isOpen, onClose, webhook }: TestWebhookModalP
         statusCode,
       })
     } catch (error) {
+      console.error("Network error occurred:", error)
       setResult({
         success: false,
         message: "Network error occurred",

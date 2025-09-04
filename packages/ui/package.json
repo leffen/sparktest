@@ -26,6 +26,7 @@
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
+    "lint": "echo 'No linting configured for UI package'",
     "prepublishOnly": "pnpm build"
   },
   "publishConfig": {

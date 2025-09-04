@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import type { Executor } from "@sparktest/core"
+import type { Executor } from "@tatou/core"
 
 interface ExecutorTestResult {
   success: boolean
@@ -69,7 +69,7 @@ export function ExecutorTestModal({ isOpen, onClose, executor }: ExecutorTestMod
             `> Pulling image: ${executor.image}`,
             `> Image pulled successfully (${pullTime}s)`,
             `> Container started (${startTime}s)`,
-            `> Running: ${executor.defaultCommand.join(" ")}`,
+            `> Running: ${executor.command?.join(" ") || "No command specified"}`,
             "",
             "✓ Executor is working correctly",
             "✓ All dependencies available",
@@ -94,6 +94,7 @@ export function ExecutorTestModal({ isOpen, onClose, executor }: ExecutorTestMod
         logs,
       })
     } catch (error) {
+      console.error("Test execution failed:", error)
       setResult({
         success: false,
         message: "Test execution failed",
@@ -132,7 +133,7 @@ export function ExecutorTestModal({ isOpen, onClose, executor }: ExecutorTestMod
             <div>
               <span className="font-medium">File Types:</span>
               <div className="flex flex-wrap gap-1 mt-1">
-                {executor.supportedFileTypes.map((type) => (
+                {executor.supportedFileTypes?.map((type) => (
                   <Badge key={type} variant="outline" className="text-xs">
                     {type}
                   </Badge>
@@ -144,7 +145,7 @@ export function ExecutorTestModal({ isOpen, onClose, executor }: ExecutorTestMod
           <div>
             <span className="text-sm font-medium">Default Command:</span>
             <code className="block mt-1 text-sm bg-muted px-3 py-2 rounded">
-              {executor.defaultCommand.join(" ")}
+              {executor.command?.join(" ") || "No command specified"}
             </code>
           </div>
 
