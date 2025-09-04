@@ -180,28 +180,28 @@ describe("SparkTestStorageService", () => {
     it("should get suites", async () => {
       localStorageMock.getItem.mockReturnValue(JSON.stringify([mockSuite]))
 
-      const result = await service.getSuites()
+      const result = await service.getTestSuites()
       expect(Array.isArray(result)).toBe(true)
     })
 
     it("should save suite", async () => {
       localStorageMock.getItem.mockReturnValue("[]")
 
-      const result = await service.saveSuite(mockSuite)
+      const result = await service.saveTestSuite(mockSuite)
       expect(result).toEqual(mockSuite)
     })
 
     it("should delete suite", async () => {
       localStorageMock.getItem.mockReturnValue(JSON.stringify([mockSuite]))
 
-      const result = await service.deleteSuite("1")
+      const result = await service.deleteTestSuite("1")
       expect(result).toBe(true)
     })
 
     it("should get suite by id", async () => {
       localStorageMock.getItem.mockReturnValue(JSON.stringify([mockSuite]))
 
-      const result = await service.getSuiteById("1")
+      const result = await service.getTestSuiteById("1")
       expect(result).toEqual(mockSuite)
     })
   })

@@ -31,10 +31,10 @@ describe("HybridStorageService", () => {
       getRunById: vi.fn(),
       createRun: vi.fn(),
       subscribeToRuns: vi.fn(),
-      getSuites: vi.fn(),
-      saveSuite: vi.fn(),
-      deleteSuite: vi.fn(),
-      getSuiteById: vi.fn(),
+      getTestSuites: vi.fn(),
+      saveTestSuite: vi.fn(),
+      deleteTestSuite: vi.fn(),
+      getTestSuiteById: vi.fn(),
       initialize: vi.fn(),
       getKubernetesHealth: vi.fn(),
       getTestRunLogs: vi.fn(),
@@ -58,10 +58,10 @@ describe("HybridStorageService", () => {
       getRunById: vi.fn(),
       createRun: vi.fn(),
       subscribeToRuns: vi.fn(),
-      getSuites: vi.fn(),
-      saveSuite: vi.fn(),
-      deleteSuite: vi.fn(),
-      getSuiteById: vi.fn(),
+      getTestSuites: vi.fn(),
+      saveTestSuite: vi.fn(),
+      deleteTestSuite: vi.fn(),
+      getTestSuiteById: vi.fn(),
       getKubernetesHealth: vi.fn(),
       getTestRunLogs: vi.fn(),
       getJobLogs: vi.fn(),
@@ -234,13 +234,13 @@ describe("HybridStorageService", () => {
           labels: [],
         },
       ]
-      apiInstance.getSuites.mockRejectedValue(new Error("Network Error"))
-      localInstance.getSuites.mockResolvedValue(mockSuites)
+      apiInstance.getTestSuites.mockRejectedValue(new Error("Network Error"))
+      localInstance.getTestSuites.mockResolvedValue(mockSuites)
 
-      const result = await service.getSuites()
+      const result = await service.getTestSuites()
 
-      expect(apiInstance.getSuites).toHaveBeenCalled()
-      expect(localInstance.getSuites).toHaveBeenCalled()
+      expect(apiInstance.getTestSuites).toHaveBeenCalled()
+      expect(localInstance.getTestSuites).toHaveBeenCalled()
       expect(result).toEqual(mockSuites)
     })
   })
@@ -363,24 +363,24 @@ describe("HybridStorageService", () => {
         createdAt: "2023-01-01",
         labels: [],
       }
-      apiInstance.saveSuite.mockRejectedValue(new Error("Network Error"))
-      localInstance.saveSuite.mockResolvedValue(mockSuite)
+      apiInstance.saveTestSuite.mockRejectedValue(new Error("Network Error"))
+      localInstance.saveTestSuite.mockResolvedValue(mockSuite)
 
-      const result = await service.saveSuite(mockSuite)
+      const result = await service.saveTestSuite(mockSuite)
 
-      expect(apiInstance.saveSuite).toHaveBeenCalledWith(mockSuite)
-      expect(localInstance.saveSuite).toHaveBeenCalledWith(mockSuite)
+      expect(apiInstance.saveTestSuite).toHaveBeenCalledWith(mockSuite)
+      expect(localInstance.saveTestSuite).toHaveBeenCalledWith(mockSuite)
       expect(result).toEqual(mockSuite)
     })
 
     it("should handle deleteSuite with fallback", async () => {
-      apiInstance.deleteSuite.mockRejectedValue(new Error("Network Error"))
-      localInstance.deleteSuite.mockResolvedValue(true)
+      apiInstance.deleteTestSuite.mockRejectedValue(new Error("Network Error"))
+      localInstance.deleteTestSuite.mockResolvedValue(true)
 
-      const result = await service.deleteSuite("1")
+      const result = await service.deleteTestSuite("1")
 
-      expect(apiInstance.deleteSuite).toHaveBeenCalledWith("1")
-      expect(localInstance.deleteSuite).toHaveBeenCalledWith("1")
+      expect(apiInstance.deleteTestSuite).toHaveBeenCalledWith("1")
+      expect(localInstance.deleteTestSuite).toHaveBeenCalledWith("1")
       expect(result).toBe(true)
     })
 
@@ -394,13 +394,13 @@ describe("HybridStorageService", () => {
         createdAt: "2023-01-01",
         labels: [],
       }
-      apiInstance.getSuiteById.mockRejectedValue(new Error("Network Error"))
-      localInstance.getSuiteById.mockResolvedValue(mockSuite)
+      apiInstance.getTestSuiteById.mockRejectedValue(new Error("Network Error"))
+      localInstance.getTestSuiteById.mockResolvedValue(mockSuite)
 
-      const result = await service.getSuiteById("1")
+      const result = await service.getTestSuiteById("1")
 
-      expect(apiInstance.getSuiteById).toHaveBeenCalledWith("1")
-      expect(localInstance.getSuiteById).toHaveBeenCalledWith("1")
+      expect(apiInstance.getTestSuiteById).toHaveBeenCalledWith("1")
+      expect(localInstance.getTestSuiteById).toHaveBeenCalledWith("1")
       expect(result).toEqual(mockSuite)
     })
   })
