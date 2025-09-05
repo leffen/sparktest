@@ -287,7 +287,7 @@ importers:
   packages/storage-service:
     dependencies:
       '@tatou/core':
-        specifier: workspace:*
+        specifier: workspace:1.2.2
         version: link:../core
     devDependencies:
       '@types/node':

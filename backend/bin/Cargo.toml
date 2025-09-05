@@ -1,27 +1,26 @@
 [package]
 name = "sparktest-bin"
-version = "2.0.0"
+version = "1.2.2"
 edition = "2021"
-description = "SparkTest backend server binary"
+description = "Binaries and infra for SparkTest"
 license = "MIT"
 repository = "https://github.com/kevintatou/sparktest"
 homepage = "https://github.com/kevintatou/sparktest"
 include = ["src/**/*", "Cargo.toml", "migrations/**/*"]
 
 [dependencies]
-sparktest-core = { path = "../core" }
-sparktest-api = { version = "2.0.0", path = "../api" }
+sparktest-api = { version = "1.2.2", path = "../api" }
 axum = "0.7"
-tokio = { version = "1.36", features = ["full"] }
-sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "postgres", "uuid", "chrono", "macros"] }
-dotenvy = "0.15"
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-anyhow = "1.0"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+dotenvy = "0.15"
 chrono = { version = "0.4", features = ["serde"] }
 postgres = { version = "0.19", features = ["with-chrono-0_4"] }
+tokio = { version = "1.36", features = ["full"] }
 itertools = "0.10"
 uuid = { version = "1", features = ["v4", "serde"] }
 time = { version = "0.3", features = ["parsing", "formatting"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+anyhow = "1.0"
+sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "postgres", "sqlite", "uuid", "chrono", "macros"] }
