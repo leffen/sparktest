@@ -8,7 +8,7 @@ repository = "https://github.com/kevintatou/sparktest"
 homepage = "https://github.com/kevintatou/sparktest"
 
 [dependencies]
-sparktest-core = { version = "2.0.0", path = "../core" }
+sparktest-core = { path = "../core" }
 axum = "0.7"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
