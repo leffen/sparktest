@@ -30,9 +30,9 @@ jobs:
         run: pnpm install
 
       - name: Build application
-        run: pnpm --filter "@sparktest/oss" build
+        run: pnpm --filter "@tatou/oss" build
 
       - name: Run E2E tests
-        run: pnpm --filter "@sparktest/oss" test:e2e
+        run: pnpm --filter "@tatou/oss" test:e2e
         env:
           CI: true
