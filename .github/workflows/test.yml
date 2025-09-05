@@ -38,6 +38,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build packages
+        run: pnpm build:packages
+
       - name: Run linter
         run: pnpm --filter "@tatou/oss" lint
 
@@ -47,7 +50,17 @@ jobs:
       - name: Run tests
         run: pnpm --filter "@tatou/oss" test:coverage
 
+      - name: Check coverage file exists
+        id: check-coverage
+        run: |
+          if [ -f apps/oss/coverage/lcov.info ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Verify coverage file and show summary
+        if: steps.check-coverage.outputs.exists == 'true'
         run: |
           echo "Coverage files generated:"
           ls -la apps/oss/coverage/
@@ -95,6 +108,7 @@ jobs:
           "
 
       - name: Upload coverage to Codecov
+        if: steps.check-coverage.outputs.exists == 'true'
         uses: codecov/codecov-action@v4
         with:
           file: ./apps/oss/coverage/lcov.info
@@ -105,7 +119,7 @@ jobs:
           verbose: true
 
       - name: Comment PR with coverage
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.check-coverage.outputs.exists == 'true'
         uses: romeovs/lcov-reporter-action@v0.4.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
