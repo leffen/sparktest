@@ -9,7 +9,7 @@ services:
     container_name: sparktest-frontend
     restart: unless-stopped
     ports:
-      - "80:3000"
+      - "3080:3000"
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1

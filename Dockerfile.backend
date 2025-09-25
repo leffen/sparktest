@@ -24,7 +24,7 @@ RUN if [ ! -f Cargo.lock ]; then \
 RUN cargo build --release --bin sparktest-bin
 
 # Runtime stage
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
@@ -42,6 +42,9 @@ WORKDIR /app
 # Create data directory
 RUN mkdir -p /app/data && chown sparktest:sparktest /app/data
 
+# Copy the database
+COPY data/sparktest.db /app/data/sparktest.db
+
 # Copy the binary from builder stage
 COPY --from=builder /app/target/release/sparktest-bin /app/sparktest-backend
 COPY --from=builder /app/backend/bin/migrations /app/migrations
@@ -56,7 +59,7 @@ EXPOSE 8080
 
 # Environment variables
 ENV RUST_LOG=info
-ENV DATABASE_URL=sqlite:./data/sparktest.db
+ENV DATABASE_URL=sqlite:/app/data/sparktest.db
 ENV PORT=8080
 
 # Health check
